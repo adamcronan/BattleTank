@@ -7,10 +7,10 @@ void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto MyControlledTank = GetControlledTank();
+	auto MyControlledTank = GetPlayerControlledTank();
 	if (MyControlledTank)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Tank: %s is controlled"), *(MyControlledTank->GetName()))
+		UE_LOG(LogTemp, Warning, TEXT("Tank: %s is controlled by player"), *(MyControlledTank->GetName()))
 	}
 	else
 	{
@@ -20,7 +20,13 @@ void ATankPlayerController::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("PlayerController Begin Play"))
 }
 
-ATank* ATankPlayerController::GetControlledTank() const
+void ATankPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	UE_LOG(LogTemp, Warning, TEXT("Ticking.."))
+}
+
+ATank* ATankPlayerController::GetPlayerControlledTank() const
 {
 	return Cast<ATank>(GetPawn());
 }
