@@ -46,8 +46,51 @@ void ATankPlayerController::AimTowardsCrosshair()
 // Get world location of linetrace through crosshair, true if hits landscape
 bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 {
-	HitLocation = FVector(1.0);
+	// Find the crosshair position
+	int32 ViewportSizeX, ViewportSizeY;
+	GetViewportSize(ViewportSizeX, ViewportSizeY);
+	auto ScreenLocation = FVector2D(ViewportSizeX * CrossHairXLocation, ViewportSizeY * CrossHairYLocation);
+	FVector LookDirection;
+
+	if (GetLookDirection(ScreenLocation, LookDirection))
+	{
+		// line trace along that look direction, see what we hit
+		GetLookVectorHitLocation(LookDirection, HitLocation);
+	}
+
+	
 	return true;
+}
+
+bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const
+{
+	// "De-project" the screen position of the crosshair to a world direction
+	FVector CameraWorldLocation; // Does not matter here
+	return DeprojectScreenPositionToWorld(
+		ScreenLocation.X,
+		ScreenLocation.Y,
+		CameraWorldLocation,
+		LookDirection
+	);
+}
+
+bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const
+{
+	FHitResult HitResult;
+	auto StartLocation = PlayerCameraManager->GetCameraLocation();			// Where is the camera currently
+	auto EndLocation = StartLocation + (LookDirection * LineTraceRange);	// Based on the way im looking, where is the end of this imaginary line
+	if (GetWorld()->LineTraceSingleByChannel(								// Create line trace based on above vectors
+		HitResult,
+		StartLocation,
+		EndLocation,
+		ECollisionChannel::ECC_Visibility)									// Says if something is visible, I can hit it
+		)																	// HitResult contains the thing that the line trace hit
+	{
+		HitLocation = HitResult.Location;									// Take the location of the thing that we hit
+		return true;
+	}
+	HitLocation = FVector(0); 
+	return false;   // Line trace didnt succeed
 }
 
 
