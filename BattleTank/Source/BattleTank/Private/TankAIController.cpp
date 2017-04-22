@@ -3,6 +3,15 @@
 #include "BattleTank.h"
 #include "TankAIController.h"
 
+void ATankAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (GetPlayerTank())
+	{
+		GetAIControlledTank()->AimAt(GetPlayerTank()->GetActorLocation());
+	}
+}
+
 ATank* ATankAIController::GetAIControlledTank() const
 {
 	return Cast<ATank>(GetPawn());
@@ -10,10 +19,12 @@ ATank* ATankAIController::GetAIControlledTank() const
 
 void ATankAIController::BeginPlay()
 {
+	Super::BeginPlay();
+	PrimaryActorTick.bCanEverTick = true;
 	ATank* PlayerTank = GetPlayerTank();
 	if (PlayerTank)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerTank is %s"), *(PlayerTank->GetName()))
+		UE_LOG(LogTemp, Warning, TEXT("AI reporting that PlayerTank is %s"), *(PlayerTank->GetName()))
 	}
 	else
 	{
@@ -33,3 +44,9 @@ ATank* ATankAIController::GetPlayerTank() const
 		return Cast<ATank>(PlayerPawn);
 	}
 }
+
+void ATankAIController::AimTowardPlayer()
+{
+	
+}
+

@@ -19,6 +19,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+
 	ATank* GetPlayerControlledTank() const;
 
 	// Start the tank moving the barrel so that a shot would hit where crosshair

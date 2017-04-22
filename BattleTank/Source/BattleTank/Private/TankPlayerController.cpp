@@ -6,6 +6,7 @@
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	PrimaryActorTick.bCanEverTick = true;
 
 	auto MyControlledTank = GetPlayerControlledTank();
 	if (MyControlledTank)
@@ -38,7 +39,7 @@ void ATankPlayerController::AimTowardsCrosshair()
 	FVector HitLocation; // Out parameter
 	if (GetSightRayHitLocation(HitLocation))  // Side effect: this will ray trace
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HitLocation: %s"), *HitLocation.ToString())
+		GetPlayerControlledTank()->AimAt(HitLocation);
 		// TODO Tell player controlled tank to aim at this point
 	}
 }
